@@ -40,6 +40,10 @@ h1 {
     height: 100px;
 }
 
+.Escondido {
+    display: none;
+}
+
 @media (max-width: 860px) {
     h1 {
         font-size: 36px;
