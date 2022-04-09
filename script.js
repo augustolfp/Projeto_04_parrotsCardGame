@@ -37,4 +37,25 @@ function escondeTodasCartas() {
     }
 }
 
-insereCartasNaTela()
+function escolheGifs (numeroDeCartas) {
+    let numerodeGifs = numeroDeCartas/2;
+    let arrayGifs = ["Gifs/bobrossparrot.gif", "Gifs/explodyparrot.gif", "Gifs/fiestaparrot.gif", "Gifs/metalparrot.gif", "Gifs/revertitparrot.gif", "Gifs/tripletsparrot.gif", "Gifs/unicornparrot.gif"];
+    arrayGifs = arrayGifs.sort(ScrambleArrayFunction);
+    let selectedGifs = [];
+    for(let i=0;i<numerodeGifs;i++) {
+        selectedGifs.push(arrayGifs[i])
+    }
+    return selectedGifs;
+}
+
+function scrambledGifs (numeroDeCartas) {
+    let selectedGifs = escolheGifs(numeroDeCartas);
+    let scrambledPairsOfGifs = selectedGifs.concat(selectedGifs);
+    scrambledPairsOfGifs = scrambledPairsOfGifs.sort(ScrambleArrayFunction);
+    return scrambledPairsOfGifs;
+}
+
+function ScrambleArrayFunction() { 
+	return Math.random() - 0.5; 
+}
+//insereCartasNaTela()
