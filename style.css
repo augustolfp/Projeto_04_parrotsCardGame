@@ -22,7 +22,7 @@ h1 {
     width: 80%;
 }
 
-.Carta {
+.containerCartas div {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -35,7 +35,7 @@ h1 {
     margin: 17px;
 }
 
-.Carta img {
+img {
     width: 100px;
     height: 100px;
 }

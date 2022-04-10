@@ -16,7 +16,7 @@ function insereCartasNaTela() {
     let ArrayGifsEmbaralhados = scrambledGifs(numeroDeCartas);
     for(let i=0;i<numeroDeCartas;i++) {
         let containerCartas = document.querySelector(".containerCartas");
-        let umaCarta = `<div class='Carta' onclick='contabilizaJogada(this)'><img class='fundoCarta' src='Pngs/front.png'><img class='frenteCarta Escondido' src=${ArrayGifsEmbaralhados[i]}></div>`;
+        let umaCarta = `<div id=${i} onclick='contabilizaJogada(this)'><img class='fundoCarta' src='Pngs/front.png'><img class='frenteCarta Escondido' src=${ArrayGifsEmbaralhados[i]}></div>`;
         containerCartas.innerHTML = containerCartas.innerHTML + umaCarta;
     }
 }
@@ -24,13 +24,14 @@ function insereCartasNaTela() {
 function contabilizaJogada(cartaClicada) {
     revelaCartaClicada(cartaClicada);
     let gifDaCarta = cartaClicada.querySelector(".frenteCarta").src;
-    ArrayJogadasFeitas.push(gifDaCarta);
+    let idCarta = cartaClicada.id;
+    ArrayJogadasFeitas.push({idDaCarta: idCarta, gifCarta: gifDaCarta});
     let numeroDeCartasClicadas = ArrayJogadasFeitas.length;
     if(numeroDeCartasClicadas%2===0) {
         let UltimoItem = numeroDeCartasClicadas - 1;
         let PenultimoItem = numeroDeCartasClicadas - 2;
-        if(ArrayJogadasFeitas[UltimoItem]!=ArrayJogadasFeitas[PenultimoItem]) {
-            setTimeout(escondeTodasCartas, 1000)
+        if(ArrayJogadasFeitas[UltimoItem].gifCarta!=ArrayJogadasFeitas[PenultimoItem].gifCarta) {
+            setTimeout(function() {escondeDuasCartas(ArrayJogadasFeitas[UltimoItem].idDaCarta,ArrayJogadasFeitas[PenultimoItem].idDaCarta)}, 1000);
         }
     }
 }
@@ -42,13 +43,15 @@ function revelaCartaClicada(cartaClicada) {
     frenteCarta.classList.remove("Escondido");
 }
 
-function escondeTodasCartas() {
-    let fundoCarta = document.querySelectorAll(".fundoCarta");
-    let frenteCarta = document.querySelectorAll(".frenteCarta");
-    for(let i=0; i<fundoCarta.length; i++) {
-        fundoCarta[i].classList.remove("Escondido");
-        frenteCarta[i].classList.add("Escondido");
-    }
+function escondeDuasCartas(id1, id2) {
+    let fundoCarta1 = document.getElementById(`${id1}`).querySelector(".fundoCarta");
+    let frenteCarta1 = document.getElementById(`${id1}`).querySelector(".frenteCarta");
+    let fundoCarta2 = document.getElementById(`${id2}`).querySelector(".fundoCarta");
+    let frenteCarta2 = document.getElementById(`${id2}`).querySelector(".frenteCarta");
+    fundoCarta1.classList.remove("Escondido");
+    frenteCarta1.classList.add("Escondido");
+    fundoCarta2.classList.remove("Escondido");
+    frenteCarta2.classList.add("Escondido");
 }
 
 function escolheGifs (numeroDeCartas) {
