@@ -34,6 +34,7 @@ function contabilizaJogada(cartaClicada) {
             setTimeout(function() {escondeDuasCartas(ArrayJogadasFeitas[UltimoItem].idDaCarta,ArrayJogadasFeitas[PenultimoItem].idDaCarta)}, 1000);
         }
     }
+    checaSeUsuarioGanhou();
 }
 
 function revelaCartaClicada(cartaClicada) {
@@ -76,7 +77,13 @@ function ScrambleArrayFunction() {
 	return Math.random() - 0.5; 
 }
 
-
+function checaSeUsuarioGanhou() {
+    let numeroDeCartasEscondidas = document.querySelectorAll(".frenteCarta.Escondido").length;
+    let numeroDeJogadas = ArrayJogadasFeitas.length;
+    if(numeroDeCartasEscondidas===0) {
+        alert(`Você ganhou em ${numeroDeJogadas} jogadas!`);
+    }
+}
 
 
 
