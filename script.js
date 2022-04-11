@@ -1,4 +1,6 @@
 const ArrayJogadasFeitas = [];
+let tempo = 0;
+let meuInterval;
 
 function perguntaQuantasCartas() {
     let numeroDeCartas = prompt("Com quantas Cartas você deseja jogar?");
@@ -16,14 +18,18 @@ function insereCartasNaTela() {
     let ArrayGifsEmbaralhados = scrambledGifs(numeroDeCartas);
     for(let i=0;i<numeroDeCartas;i++) {
         let containerCartas = document.querySelector(".containerCartas");
-        let umaCarta = `<div id=${i} onclick='contabilizaJogada(this)'><img class='fundoCarta' src='Pngs/front.png'><img class='frenteCarta Escondido' src=${ArrayGifsEmbaralhados[i]}></div>`;
+        let umaCarta = `<div id=${i} class='carta' onclick='contabilizaJogada(this)'>
+                            <div class='fundoCarta'><img src='Pngs/front.png'></div>
+                            <div class='frenteCarta'><img src=${ArrayGifsEmbaralhados[i]}></div>
+                        </div>`;
         containerCartas.innerHTML = containerCartas.innerHTML + umaCarta;
     }
+    meuInterval = setInterval(contadorTempo, 1000);
 }
 
 function contabilizaJogada(cartaClicada) {
     revelaCartaClicada(cartaClicada);
-    let gifDaCarta = cartaClicada.querySelector(".frenteCarta").src;
+    let gifDaCarta = cartaClicada.querySelector(".frenteCarta").querySelector("img").src;
     let idCarta = cartaClicada.id;
     ArrayJogadasFeitas.push({idDaCarta: idCarta, gifCarta: gifDaCarta});
     let numeroDeCartasClicadas = ArrayJogadasFeitas.length;
@@ -40,8 +46,8 @@ function contabilizaJogada(cartaClicada) {
 function revelaCartaClicada(cartaClicada) {
     let fundoCarta = cartaClicada.querySelector(".fundoCarta");
     let frenteCarta = cartaClicada.querySelector(".frenteCarta");
-    fundoCarta.classList.add("Escondido");
-    frenteCarta.classList.remove("Escondido");
+    fundoCarta.classList.add("rotateFundo");
+    frenteCarta.classList.add("rotateFrente");
 }
 
 function escondeDuasCartas(id1, id2) {
@@ -49,10 +55,10 @@ function escondeDuasCartas(id1, id2) {
     let frenteCarta1 = document.getElementById(`${id1}`).querySelector(".frenteCarta");
     let fundoCarta2 = document.getElementById(`${id2}`).querySelector(".fundoCarta");
     let frenteCarta2 = document.getElementById(`${id2}`).querySelector(".frenteCarta");
-    fundoCarta1.classList.remove("Escondido");
-    frenteCarta1.classList.add("Escondido");
-    fundoCarta2.classList.remove("Escondido");
-    frenteCarta2.classList.add("Escondido");
+    fundoCarta1.classList.remove("rotateFundo");
+    frenteCarta1.classList.remove("rotateFrente");
+    fundoCarta2.classList.remove("rotateFundo");
+    frenteCarta2.classList.remove("rotateFrente");
 }
 
 function escolheGifs (numeroDeCartas) {
@@ -78,14 +84,19 @@ function ScrambleArrayFunction() {
 }
 
 function checaSeUsuarioGanhou() {
-    let numeroDeCartasEscondidas = document.querySelectorAll(".frenteCarta.Escondido").length;
+    let numeroDeCartasReveladas = document.querySelectorAll(".rotateFrente").length;
+    let numeroDeCartas = document.querySelectorAll(".carta").length;
     let numeroDeJogadas = ArrayJogadasFeitas.length;
-    if(numeroDeCartasEscondidas===0) {
-        alert(`Você ganhou em ${numeroDeJogadas} jogadas!`);
+    if(numeroDeCartasReveladas===numeroDeCartas) {
+        clearInterval(meuInterval);
+        alert(`Você ganhou em ${numeroDeJogadas} jogadas, e levou apenas ${tempo} segundos!`);
+        
     }
 }
 
-
+function contadorTempo() {
+    tempo++;
+}
 
 
 
