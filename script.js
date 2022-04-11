@@ -1,7 +1,8 @@
 let ArrayJogadasFeitas = [];
 let tempo = 0;
 let meuInterval;
-let isLocked;
+let travarComandosDoUsuario;
+
 
 function perguntaQuantasCartas() {
     let numeroDeCartas = prompt("Com quantas Cartas você deseja jogar?");
@@ -14,10 +15,10 @@ function perguntaQuantasCartas() {
     }
 }
 
-function insereCartasNaTela() {
+function inicializaJogo() {
     let numeroDeCartas = perguntaQuantasCartas();
-    let ArrayGifsEmbaralhados = scrambledGifs(numeroDeCartas);
-    for(let i=0;i<numeroDeCartas;i++) {
+    let ArrayGifsEmbaralhados = retornaArrayParesCartasEmbaralhadas(numeroDeCartas);
+    for(let i=0; i<numeroDeCartas; i++) {
         let containerCartas = document.querySelector(".containerCartas");
         let umaCarta = `<div id=${i} class='carta' onclick='contabilizaJogada(this)'>
                             <div class='fundoCarta'><img src='Pngs/front.png'></div>
@@ -26,27 +27,36 @@ function insereCartasNaTela() {
         containerCartas.innerHTML = containerCartas.innerHTML + umaCarta;
     }
     meuInterval = setInterval(contadorTempo, 1000);
-    isLocked = false;
+    travarComandosDoUsuario = false;
 }
 
 function contabilizaJogada(cartaClicada) {
-    if(isLocked === false) {
+    if(travarComandosDoUsuario === false && cartaClicadaJaEstaVirada(cartaClicada) === false) {
         revelaCartaClicada(cartaClicada);
         let gifDaCarta = cartaClicada.querySelector(".frenteCarta").querySelector("img").src;
         let idCarta = cartaClicada.id;
         ArrayJogadasFeitas.push({idDaCarta: idCarta, gifCarta: gifDaCarta});
         let numeroDeCartasClicadas = ArrayJogadasFeitas.length;
         if(numeroDeCartasClicadas%2===0) {
-            let UltimoItem = numeroDeCartasClicadas - 1;
-            let PenultimoItem = numeroDeCartasClicadas - 2;
-            if(ArrayJogadasFeitas[UltimoItem].gifCarta!=ArrayJogadasFeitas[PenultimoItem].gifCarta) {
-                isLocked = true;
-                setTimeout(function() {escondeDuasCartas(ArrayJogadasFeitas[UltimoItem].idDaCarta,ArrayJogadasFeitas[PenultimoItem].idDaCarta)}, 1000);
+            travarComandosDoUsuario = true;
+            let indiceUltimoItem = numeroDeCartasClicadas - 1;
+            let indicePenultimoItem = numeroDeCartasClicadas - 2;
+            let ultimaCartaClicada = ArrayJogadasFeitas[indiceUltimoItem];
+            let penultimaCartaClicada = ArrayJogadasFeitas[indicePenultimoItem];
+            if(ultimaCartaClicada.gifCarta != penultimaCartaClicada.gifCarta) {
+                setTimeout(function() {escondeDuasCartas(ultimaCartaClicada.idDaCarta, penultimaCartaClicada.idDaCarta)}, 1000);
+            }
+            else {
+                travarComandosDoUsuario = false;
             }
         }
         checaSeUsuarioGanhou();
     }
+}
 
+function cartaClicadaJaEstaVirada(cartaClicada) {
+    let estado = cartaClicada.querySelector(".frenteCarta").classList.contains("rotateFrente");
+    return estado;
 }
 
 function revelaCartaClicada(cartaClicada) {
@@ -65,28 +75,28 @@ function escondeDuasCartas(id1, id2) {
     frenteCarta1.classList.remove("rotateFrente");
     fundoCarta2.classList.remove("rotateFundo");
     frenteCarta2.classList.remove("rotateFrente");
-    isLocked = false;
+    travarComandosDoUsuario = false;
 }
 
-function escolheGifs (numeroDeCartas) {
+function escolheGifs(numeroDeCartas) {
     let numerodeGifs = numeroDeCartas/2;
     let arrayGifs = ["Gifs/bobrossparrot.gif", "Gifs/explodyparrot.gif", "Gifs/fiestaparrot.gif", "Gifs/metalparrot.gif", "Gifs/revertitparrot.gif", "Gifs/tripletsparrot.gif", "Gifs/unicornparrot.gif"];
-    arrayGifs = arrayGifs.sort(ScrambleArrayFunction);
-    let selectedGifs = [];
-    for(let i=0;i<numerodeGifs;i++) {
-        selectedGifs.push(arrayGifs[i])
+    arrayGifs = arrayGifs.sort(funcaoShuffleCards);
+    let gifsSelecionados = [];
+    for(let i=0; i<numerodeGifs; i++) {
+        gifsSelecionados.push(arrayGifs[i])
     }
-    return selectedGifs;
+    return gifsSelecionados;
 }
 
-function scrambledGifs (numeroDeCartas) {
-    let selectedGifs = escolheGifs(numeroDeCartas);
-    let scrambledPairsOfGifs = selectedGifs.concat(selectedGifs);
-    scrambledPairsOfGifs = scrambledPairsOfGifs.sort(ScrambleArrayFunction);
-    return scrambledPairsOfGifs;
+function retornaArrayParesCartasEmbaralhadas(numeroDeCartas) {
+    let gifsSelecionados = escolheGifs(numeroDeCartas);
+    let paresDeCartasEmbaralhadas = gifsSelecionados.concat(gifsSelecionados);
+    paresDeCartasEmbaralhadas = paresDeCartasEmbaralhadas.sort(funcaoShuffleCards);
+    return paresDeCartasEmbaralhadas;
 }
 
-function ScrambleArrayFunction() { 
+function funcaoShuffleCards() { 
 	return Math.random() - 0.5; 
 }
 
@@ -94,7 +104,7 @@ function checaSeUsuarioGanhou() {
     let numeroDeCartasReveladas = document.querySelectorAll(".rotateFrente").length;
     let numeroDeCartas = document.querySelectorAll(".carta").length;
     let numeroDeJogadas = ArrayJogadasFeitas.length;
-    if(numeroDeCartasReveladas===numeroDeCartas) {
+    if(numeroDeCartasReveladas === numeroDeCartas) {
         clearInterval(meuInterval);
         alert(`Você ganhou em ${numeroDeJogadas} jogadas, e levou apenas ${tempo} segundos!`);
         desejaJogarNovamente();
@@ -110,7 +120,7 @@ function desejaJogarNovamente() {
     let respostaUsuario = prompt("Deseja jogar novamente?");
     if(respostaUsuario === "sim") {
         limpaTela();
-        insereCartasNaTela();
+        inicializaJogo();
     }
     else if(respostaUsuario != "não") {
         alert('responda "sim" ou "não"!')
@@ -125,4 +135,4 @@ function limpaTela() {
     ArrayJogadasFeitas = [];
 }
 
-insereCartasNaTela()
+inicializaJogo()
