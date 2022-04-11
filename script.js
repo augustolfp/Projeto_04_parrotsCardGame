@@ -1,6 +1,7 @@
 let ArrayJogadasFeitas = [];
 let tempo = 0;
 let meuInterval;
+let isLocked;
 
 function perguntaQuantasCartas() {
     let numeroDeCartas = prompt("Com quantas Cartas você deseja jogar?");
@@ -9,7 +10,7 @@ function perguntaQuantasCartas() {
     }
     else {
         alert("Esse é um jogo da memória, o número de cartas precisa ser par!\n\nAlém disso, o número mínimo são 4 cartas, e o máximo 14!");
-        perguntaQuantasCartas();
+        return perguntaQuantasCartas();
     }
 }
 
@@ -25,22 +26,27 @@ function insereCartasNaTela() {
         containerCartas.innerHTML = containerCartas.innerHTML + umaCarta;
     }
     meuInterval = setInterval(contadorTempo, 1000);
+    isLocked = false;
 }
 
 function contabilizaJogada(cartaClicada) {
-    revelaCartaClicada(cartaClicada);
-    let gifDaCarta = cartaClicada.querySelector(".frenteCarta").querySelector("img").src;
-    let idCarta = cartaClicada.id;
-    ArrayJogadasFeitas.push({idDaCarta: idCarta, gifCarta: gifDaCarta});
-    let numeroDeCartasClicadas = ArrayJogadasFeitas.length;
-    if(numeroDeCartasClicadas%2===0) {
-        let UltimoItem = numeroDeCartasClicadas - 1;
-        let PenultimoItem = numeroDeCartasClicadas - 2;
-        if(ArrayJogadasFeitas[UltimoItem].gifCarta!=ArrayJogadasFeitas[PenultimoItem].gifCarta) {
-            setTimeout(function() {escondeDuasCartas(ArrayJogadasFeitas[UltimoItem].idDaCarta,ArrayJogadasFeitas[PenultimoItem].idDaCarta)}, 1000);
+    if(isLocked === false) {
+        revelaCartaClicada(cartaClicada);
+        let gifDaCarta = cartaClicada.querySelector(".frenteCarta").querySelector("img").src;
+        let idCarta = cartaClicada.id;
+        ArrayJogadasFeitas.push({idDaCarta: idCarta, gifCarta: gifDaCarta});
+        let numeroDeCartasClicadas = ArrayJogadasFeitas.length;
+        if(numeroDeCartasClicadas%2===0) {
+            let UltimoItem = numeroDeCartasClicadas - 1;
+            let PenultimoItem = numeroDeCartasClicadas - 2;
+            if(ArrayJogadasFeitas[UltimoItem].gifCarta!=ArrayJogadasFeitas[PenultimoItem].gifCarta) {
+                isLocked = true;
+                setTimeout(function() {escondeDuasCartas(ArrayJogadasFeitas[UltimoItem].idDaCarta,ArrayJogadasFeitas[PenultimoItem].idDaCarta)}, 1000);
+            }
         }
+        checaSeUsuarioGanhou();
     }
-    checaSeUsuarioGanhou();
+
 }
 
 function revelaCartaClicada(cartaClicada) {
@@ -59,6 +65,7 @@ function escondeDuasCartas(id1, id2) {
     frenteCarta1.classList.remove("rotateFrente");
     fundoCarta2.classList.remove("rotateFundo");
     frenteCarta2.classList.remove("rotateFrente");
+    isLocked = false;
 }
 
 function escolheGifs (numeroDeCartas) {
@@ -104,6 +111,10 @@ function desejaJogarNovamente() {
     if(respostaUsuario === "sim") {
         limpaTela();
         insereCartasNaTela();
+    }
+    else if(respostaUsuario != "não") {
+        alert('responda "sim" ou "não"!')
+        return desejaJogarNovamente();
     }
 }
 
