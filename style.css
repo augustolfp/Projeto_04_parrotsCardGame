@@ -22,8 +22,13 @@ h1 {
     width: 80%;
 }
 
-.carta {
-    
+.cronometro {
+    position: fixed;
+    right: 5%;
+    top: 30px;
+    font-size: 60px;
+    color: #75B79E;
+    font-weight: bold;
 }
 
 .fundoCarta, .frenteCarta {
@@ -71,7 +76,8 @@ img {
         font-size: 36px;
     }
 
-    .Chunk {
-        flex-direction: column;
+    .cronometro {
+        font-size: 20px;
+        top: 80px;
     }
 }

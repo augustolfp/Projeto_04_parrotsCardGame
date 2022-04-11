@@ -1,4 +1,4 @@
-const ArrayJogadasFeitas = [];
+let ArrayJogadasFeitas = [];
 let tempo = 0;
 let meuInterval;
 
@@ -90,15 +90,28 @@ function checaSeUsuarioGanhou() {
     if(numeroDeCartasReveladas===numeroDeCartas) {
         clearInterval(meuInterval);
         alert(`Você ganhou em ${numeroDeJogadas} jogadas, e levou apenas ${tempo} segundos!`);
-        
+        desejaJogarNovamente();
     }
 }
 
 function contadorTempo() {
     tempo++;
+    document.querySelector(".cronometro").innerHTML = `${tempo}s`;
 }
 
+function desejaJogarNovamente() {
+    let respostaUsuario = prompt("Deseja jogar novamente?");
+    if(respostaUsuario === "sim") {
+        limpaTela();
+        insereCartasNaTela();
+    }
+}
 
-
+function limpaTela() {
+    let containerCartas = document.querySelector(".containerCartas");
+    containerCartas.innerHTML = "";
+    tempo = 0;
+    ArrayJogadasFeitas = [];
+}
 
 insereCartasNaTela()
